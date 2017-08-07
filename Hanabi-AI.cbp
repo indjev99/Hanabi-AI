@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Hanabi-AI" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Hanabi-AI" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Hanabi-AI" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="headers/card.h" />
+		<Unit filename="headers/card_knowledge.h" />
+		<Unit filename="headers/console_handle.h" />
+		<Unit filename="headers/constants.h" />
+		<Unit filename="headers/information.h" />
+		<Unit filename="headers/move.h" />
+		<Unit filename="headers/play_game.h" />
+		<Unit filename="headers/player.h" />
+		<Unit filename="headers/player_data.h" />
+		<Unit filename="headers/print_card.h" />
+		<Unit filename="headers/run.h" />
+		<Unit filename="sources/card_knowledge.cpp" />
+		<Unit filename="sources/main.cpp" />
+		<Unit filename="sources/play_game.cpp" />
+		<Unit filename="sources/player.cpp" />
+		<Unit filename="sources/print_card.cpp" />
+		<Unit filename="sources/run.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
