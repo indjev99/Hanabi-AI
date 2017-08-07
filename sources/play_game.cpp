@@ -7,11 +7,10 @@
 
 #include "../headers/print_card.h"
 #include<iostream>
-#include<conio.h>
-using namespace std;
 
 Card deck[64];
 int deckPoss;
+Information info;
 void initialise_deck()
 {
 	deckPoss=0;
@@ -35,34 +34,33 @@ void initialise_deck()
 	}
 }
 
-int lives;
-int hints;
 void initialise_tokens()
 {
-	lives=INITIAL_LIFE_TOKENS;
-	hints=INITIAL_HINT_TOKENS;
+	info.lives=INITIAL_LIFE_TOKENS;
+	info.hints=INITIAL_HINT_TOKENS;
 }
 
 Player *players[3];
-void initialise_players()
+void initialise_players(bool print)
 {
 	for (int i=0;i<3;++i)
 	{
 		players[i]->init();
+		players[i]->print=0;
 	}
+	players[0]->print=print;
 }
 
-int clbt[5][5];
 void initialise_clbt()
 {
 	for (int i=0;i<5;++i)
 	{
-		clbt[i][1-1]=3;
+		info.clbt[i][1-1]=3;
 		for (int j=2;j<=5;++j)
 		{
-			clbt[i][j-1]=2;
+			info.clbt[i][j-1]=2;
 		}
-		clbt[i][5-1]=1;
+		info.clbt[i][5-1]=1;
 	}
 }
 
@@ -79,12 +77,11 @@ void deal_cards()
 	}
 }
 
-int piles[5];
 void initialise_piles()
 {
 	for (int i=0;i<5;++i)
 	{
-		piles[i]=0;
+		info.piles[i]=0;
 	}
 }
 
@@ -94,38 +91,18 @@ void initialise_score()
 	game_score=0;
 }
 
-MoveDone moveBefore2;
-MoveDone moveBefore;
-MoveDone moveLast;
 void initialise_moves()
 {
-	moveBefore2.type=-1;
-	moveBefore2.player=0;
-	moveBefore2.card={0,0};
-	moveBefore2.success=0;
-	moveBefore=moveBefore2;
-	moveLast=moveBefore;
+	info.moveBefore2.type=-1;
+	info.moveBefore2.player=0;
+	info.moveBefore2.card={0,0};
+	info.moveBefore2.success=0;
+	info.moveBefore=info.moveBefore2;
+	info.moveLast=info.moveBefore;
 }
-Information info;
 void make_info(int currPlayer)
 {
-	info.moveBefore2=moveBefore2;
-	info.moveBefore=moveBefore;
-	info.moveLast=moveLast;
-	for (int i=0;i<5;++i)
-	{
-		info.piles[i]=piles[i];
-	}
-	info.lives=lives;
-	info.hints=hints;
 	info.cardsLeft=deckPoss;
-	for (int i=0;i<5;++i)
-	{
-		for (int j=0;j<5;++j)
-		{
-			info.cardsLeftByType[i][j]=clbt[i][j];
-		}
-	}
 	info.next=playerData[(currPlayer+1)%3];
 	info.prev=playerData[(currPlayer+2)%3];
 	for (int i=0;i<CARDS_IN_HAND;++i)
@@ -143,8 +120,9 @@ void turn(int currPlayer)
 	currMove.card=(currMove.card-1)%CARDS_IN_HAND+1;
 
 
-	moveBefore2=moveBefore;
-	moveBefore=moveLast;
+	info.moveBefore2=info.moveBefore;
+	info.moveBefore=info.moveLast;
+	auto &moveLast=info.moveLast;
 	apply_move:
 	moveLast.type=currMove.type;
 	moveLast.player=currMove.player;
@@ -154,27 +132,24 @@ void turn(int currPlayer)
 		moveLast.card=playedCard;
 		if (currMove.type==1)
 		{
-			if (piles[playedCard.col-1]==playedCard.num-1)
+			if (info.piles[playedCard.col-1]==playedCard.num-1)
 			{
 				game_score+=1;
-				++piles[playedCard.col-1];
-				if (piles[playedCard.col-1]==5) ++hints;
+				++info.piles[playedCard.col-1];
+				if (info.piles[playedCard.col-1]==5) ++info.hints;
 				moveLast.success=1;
 			}
 			else
 			{
-				--lives;
+				--info.lives;
 				moveLast.success=0;
 			}
 		}
-		else
-		{
-			++hints;
-		}
+		else ++info.hints;
 
-		--clbt[playedCard.col-1][playedCard.num-1];
+		--info.clbt[playedCard.col-1][playedCard.num-1];
 
-		if (hints>INITIAL_HINT_TOKENS) hints=INITIAL_HINT_TOKENS;
+		if (info.hints>INITIAL_HINT_TOKENS) info.hints=INITIAL_HINT_TOKENS;
 
 		playedCard={0,0};
 		if (deckPoss>0) playedCard=deck[--deckPoss];
@@ -185,24 +160,13 @@ void turn(int currPlayer)
 	{
 		auto &target=playerData[(currPlayer+currMove.player)%3];
 		auto &chosenCard=target.cards[currMove.card-1];
-		if (hints==0 || chosenCard.col==0)
+		if (info.hints==0 || chosenCard.col==0)
 		{
 			currMove.type=2;
 			goto apply_move;
 		}
-		--hints;
+		--info.hints;
 		if (currMove.type==3)
-		{
-			moveLast.card=card_with_knowledge(chosenCard,{1,0});
-			for (int i=0;i<CARDS_IN_HAND;++i)
-			{
-				if (target.cards[i].col==chosenCard.col)
-				{
-					target.cardKnowledge[i].know_col=true;
-				}
-			}
-		}
-		else
 		{
 			moveLast.card=card_with_knowledge(chosenCard,{0,1});
 			for (int i=0;i<CARDS_IN_HAND;++i)
@@ -213,18 +177,29 @@ void turn(int currPlayer)
 				}
 			}
 		}
+		else
+		{
+			moveLast.card=card_with_knowledge(chosenCard,{1,0});
+			for (int i=0;i<CARDS_IN_HAND;++i)
+			{
+				if (target.cards[i].col==chosenCard.col)
+				{
+					target.cardKnowledge[i].know_col=true;
+				}
+			}
+		}
 	}
 	players[currPlayer]->played_move(moveLast);
 }
 
-double play_game(Player &p1, Player &p2, Player &p3)
+double play_game(Player *p1, Player *p2, Player *p3, bool print)
 {
-	players[0]=&p1;
-	players[1]=&p2;
-	players[2]=&p3;
+	players[0]=p1;
+	players[1]=p2;
+	players[2]=p3;
 	initialise_deck();
 	initialise_tokens();
-	initialise_players();
+	initialise_players(print);
 	deal_cards();
 	initialise_clbt();
 	initialise_piles();
@@ -240,20 +215,28 @@ double play_game(Player &p1, Player &p2, Player &p3)
 	cout<<endl;**/
 
 	int currPlayer=0;
-    while(deckPoss>0 && game_score<25 && lives>0)
+    while(deckPoss>0 && game_score<25 && info.lives>0)
 	{
 		turn(currPlayer);
 		++currPlayer;
 		currPlayer%=3;
 	}
-	for (int i=0;i<3 && game_score<25 && lives>0;++i)
+	for (int i=0;i<3 && game_score<25 && info.lives>0;++i)
 	{
 		turn(currPlayer);
 		++currPlayer;
 		currPlayer%=3;
 	}
 
-	if (lives==0) game_score=game_score/5-5;
+	if (info.lives==0) game_score=game_score/5-5;
+
+	if (print)
+	{
+		if (currPlayer==0) print_move(info.moveBefore2,currPlayer);
+		if (currPlayer==0 || currPlayer==2) print_move(info.moveBefore,(currPlayer+1)%3);
+		print_move(info.moveLast,(currPlayer+2)%3);
+		if (info.moveLast.type!=-1) std::cout<<std::endl;
+	}
 
 	return game_score;
 }

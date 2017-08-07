@@ -4,5 +4,6 @@
 const int CARDS_IN_HAND=5;
 const int INITIAL_HINT_TOKENS=8;
 const int INITIAL_LIFE_TOKENS=3;
+const double EPS=1e-6;
 
 #endif // CONSTANTS_H_INCLUDED

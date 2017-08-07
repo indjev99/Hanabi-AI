@@ -13,7 +13,7 @@ struct Information
 	int lives;
 	int hints;
 	int cardsLeft;
-	int cardsLeftByType[5][5];
+	int clbt[5][5]; //cardsLeftByType
     PlayerData next;
     PlayerData prev;
 	Card cards[CARDS_IN_HAND];

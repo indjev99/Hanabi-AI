@@ -6,9 +6,10 @@
 
 struct Player
 {
-	void init();
-	Move do_move(const Information &info);
-	void played_move(const MoveDone &moveDone);
+	bool print;
+	virtual void init() =0;
+	virtual Move do_move(const Information &info) =0;
+	virtual void played_move(const MoveDone &moveDone) =0;
 };
 
 void print_move(const MoveDone &moveDone, int player);
