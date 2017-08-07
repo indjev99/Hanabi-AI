@@ -146,14 +146,6 @@ Move PlayerStrategy::do_move(const Information &info)
 		}
 	}
 
-	for (int i=0;i<CARDS_IN_HAND && currMove.type==-1 && info.hints<INITIAL_HINT_TOKENS;++i)
-	{
-		if (numUseless[i]==numCases[i])
-		{
-			currMove.type=2;
-			currMove.card=i+1;
-		}
-	}
 	int repeat;
 	bool found;
 	if (currMove.type==-1 && info.hints>0)
@@ -242,6 +234,15 @@ Move PlayerStrategy::do_move(const Information &info)
 		if (currMove.card==CARDS_IN_HAND+1)
 		{
 			currMove.type=-1;
+		}
+	}
+
+	for (int i=0;i<CARDS_IN_HAND && currMove.type==-1 && info.hints<INITIAL_HINT_TOKENS;++i)
+	{
+		if (numUseless[i]==numCases[i])
+		{
+			currMove.type=2;
+			currMove.card=i+1;
 		}
 	}
 
