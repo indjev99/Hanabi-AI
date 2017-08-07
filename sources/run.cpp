@@ -9,7 +9,7 @@
 #include<conio.h>
 using namespace std;
 
-PlayerHuman human;
+//PlayerHuman human;
 PlayerRandom r1,r2,r3;
 PlayerStrategy s1,s2,s3;
 double score;
@@ -18,11 +18,12 @@ void run()
 	int sum=0;
 	for (int i=0;i<10000;++i)
 	{
-		system("cls");
-		score=play_game(&s1,&s2,&s3,1);
+		//system("cls");
+		score=play_game(&s1,&s2,&s3,0);
 		sum+=score;
-		cout<<score<<endl;
-		getch();
+		//cout<<score<<endl;
+		//getch();
+		//getch();
 	}
 	cout<<sum<<endl;
 }

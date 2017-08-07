@@ -8,6 +8,7 @@ struct MoveDone
 	int type;
 	int player;
 	Card card;
+	int cardNumber;
 	bool success;
 };
 

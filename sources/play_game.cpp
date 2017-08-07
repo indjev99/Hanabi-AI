@@ -96,6 +96,7 @@ void initialise_moves()
 	info.moveBefore2.type=-1;
 	info.moveBefore2.player=0;
 	info.moveBefore2.card={0,0};
+	info.moveBefore2.cardNumber=0;
 	info.moveBefore2.success=0;
 	info.moveBefore=info.moveBefore2;
 	info.moveLast=info.moveBefore;
@@ -119,15 +120,16 @@ void turn(int currPlayer)
 	currMove.player=(currMove.player-1)%2+1;
 	currMove.card=(currMove.card-1)%CARDS_IN_HAND+1;
 
-
 	info.moveBefore2=info.moveBefore;
 	info.moveBefore=info.moveLast;
 	auto &moveLast=info.moveLast;
 	apply_move:
 	moveLast.type=currMove.type;
-	moveLast.player=currMove.player;
+	moveLast.cardNumber=currMove.card-1;
+
 	if (currMove.type==1 || currMove.type==2)
 	{
+		moveLast.player=0;
 		auto &playedCard=playerData[currPlayer].cards[currMove.card-1];
 		moveLast.card=playedCard;
 		if (currMove.type==1)
@@ -158,6 +160,7 @@ void turn(int currPlayer)
 	}
 	else
 	{
+		moveLast.player=currMove.player;
 		auto &target=playerData[(currPlayer+currMove.player)%3];
 		auto &chosenCard=target.cards[currMove.card-1];
 		if (info.hints==0 || chosenCard.col==0)

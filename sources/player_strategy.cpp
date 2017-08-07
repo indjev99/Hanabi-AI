@@ -8,9 +8,23 @@
 using namespace std;
 
 
-void PlayerStrategy::init() {}
+void PlayerStrategy::init()
+{
+	currDraw=1;
+	for (int i=0;i<CARDS_IN_HAND;++i)
+	{
+		drawn[i]=0;
+	}
+}
 
-void PlayerStrategy::played_move(const MoveDone &moveDone) {};
+void PlayerStrategy::played_move(const MoveDone &moveDone)
+{
+	if (moveDone.type==1 || moveDone.type==2)
+	{
+		drawn[moveDone.cardNumber]=currDraw++;
+	}
+
+}
 
 Move PlayerStrategy::do_move(const Information &info)
 {
@@ -140,42 +154,106 @@ Move PlayerStrategy::do_move(const Information &info)
 			currMove.card=i+1;
 		}
 	}
-
+	int repeat;
+	bool found;
 	if (currMove.type==-1 && info.hints>0)
 	{
-		if (rand()%20<=13) currMove.type=3;
-		else currMove.type=4;
 		currMove.player=1;
-		currMove.card=-1;
-		for (int i=0;i<CARDS_IN_HAND && currMove.card==-1;++i)
+		currMove.card=0;
+		repeat=2;
+		while (repeat==2)
 		{
-			const Card &card=info.next.cards[i];
-			if (playable[card.col-1][card.num-1]) currMove.card=i+1;
+			if (rand()%20<=13) currMove.type=3;
+			else currMove.type=4;
+			if (currMove.card==CARDS_IN_HAND)
+			{
+				currMove.card=CARDS_IN_HAND+1;
+				break;
+			}
+			found=0;
+			for (int i=currMove.card;i<CARDS_IN_HAND && found==0;++i)
+			{
+				const Card &card=info.next.cards[i];
+				if (playable[card.col-1][card.num-1])
+				{
+					currMove.card=i+1;
+					found=1;
+				}
+			}
+			if (!found)
+			{
+				currMove.card=CARDS_IN_HAND+1;
+				break;
+			}
+			repeat=0;
+			if (currMove.type==3 && info.next.cardKnowledge[currMove.card-1].know_num==1)
+			{
+				currMove.type=4;
+				++repeat;
+			}
+			if (currMove.type==4 && info.next.cardKnowledge[currMove.card-1].know_col==1)
+			{
+				currMove.type=3;
+				++repeat;
+			}
 		}
-		for (int i=0;i<CARDS_IN_HAND && currMove.card==-1;++i)
+		if (currMove.card==CARDS_IN_HAND+1)
 		{
-			const Card &card=info.next.cards[i];
-			if (critical[card.col-1][card.num-1]) currMove.card=i+1;
+			currMove.player=2;
+			currMove.card=0;
+			repeat=2;
 		}
-		if (currMove.card==-1) currMove.card=rand()%5+1;
-		if (currMove.type==3 && info.next.cardKnowledge[currMove.card-1].know_num==1)
+		while (repeat==2)
 		{
-			currMove.type=4;
+			if (rand()%20<=13) currMove.type=3;
+			else currMove.type=4;
+			if (currMove.card==CARDS_IN_HAND)
+			{
+				currMove.card=CARDS_IN_HAND+1;
+				break;
+			}
+			found=0;
+			for (int i=currMove.card;i<CARDS_IN_HAND && found==0;++i)
+			{
+				const Card &card=info.prev.cards[i];
+				if (playable[card.col-1][card.num-1])
+				{
+					currMove.card=i+1;
+					found=1;
+				}
+			}
+			if (!found)
+			{
+				currMove.card=CARDS_IN_HAND+1;
+				break;
+			}
+			repeat=0;
+			if (currMove.type==3 && info.prev.cardKnowledge[currMove.card-1].know_num==1)
+			{
+				currMove.type=4;
+				++repeat;
+			}
+			if (currMove.type==4 && info.prev.cardKnowledge[currMove.card-1].know_col==1)
+			{
+				currMove.type=3;
+				++repeat;
+			}
 		}
-		if (currMove.type==4 && info.next.cardKnowledge[currMove.card-1].know_col==1)
+		if (currMove.card==CARDS_IN_HAND+1)
 		{
-			currMove.type=3;
+			currMove.type=-1;
 		}
 	}
-
 
 	double minPartCritical=2;
 	double maxPartUseless=-1;
 	double minPartPlayable=2;
-	int card=0;
+	int minDrawn=currDraw;
 
 	if (currMove.type==-1)
 	{
+		currMove.type=2;
+		currMove.card=0;
 		for (int i=0;i<CARDS_IN_HAND;++i)
 		{
 			if (partCritical[i]<minPartCritical)
@@ -183,24 +261,32 @@ Move PlayerStrategy::do_move(const Information &info)
 				minPartCritical=partCritical[i];
 			}
 		}
+
 		for (int i=0;i<CARDS_IN_HAND;++i)
 		{
-			if (partCritical[i]<=minPartCritical+EPS && partPlayable[i]<minPartPlayable)
+			if (partCritical[i]<=minPartCritical+EPS && drawn[i]<minDrawn)
 			{
-				minPartPlayable=partPlayable[i];
+				minDrawn=drawn[i];
 			}
 		}
+
 		for (int i=0;i<CARDS_IN_HAND;++i)
+		{
+			if (partCritical[i]<=minPartCritical+EPS && drawn[i]<=minDrawn && partPlayable[i]<minPartPlayable)
+			{
+				minPartPlayable=partPlayable[i];
+				currMove.card=i+1;
+			}
+		}
+
+		/*for (int i=0;i<CARDS_IN_HAND;++i)
 		{
 			if (partCritical[i]<=minPartCritical+EPS && partPlayable[i]<=minPartPlayable+EPS && partUseless[i]>maxPartUseless)
 			{
 				maxPartUseless=partUseless[i];
-				card=i;
+				currMove.card=i+1;
 			}
-		}
-
-		currMove.type=2;
-		currMove.card=card+1;
+		}*/
 	}
 
     return currMove;
