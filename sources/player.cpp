@@ -9,32 +9,77 @@ using namespace std;
 
 void Player::init() {}
 
-void Player::played_card_successful(const Card &playedCard)
+void print_move(const MoveDone &moveDone, int player)
 {
-	cout<<"You successfully played a ";
-	print_card(playedCard);
-	cout<<"."<<endl;
-	getch();
-}
-void Player::played_card_unsuccessful(const Card &playedCard)
-{
-	cout<<"You unsuccessfully played a ";
-	print_card(playedCard);
-	cout<<" and lost a life."<<endl;
-	getch();
-}
-void Player::discarded_card(const Card &playedCard)
-{
-	cout<<"You discarded a ";
-	print_card(playedCard);
-	cout<<"."<<endl;
-	getch();
-}
+	if (moveDone.type==-1) return;
+	int player2;
+	string playerName;
+	string player2Name;
+	player2=(player+moveDone.player)%3;
+	if (player==0) playerName="You";
+	else
+	{
+		playerName="Player ";
+		playerName+=('0'+player);
+	}
+	if (player2==0) player2Name="You";
+	else
+	{
+		player2Name="Player ";
+		player2Name+=('0'+player2);
+	}
 
+	if (moveDone.type==1 || moveDone.type==2)
+	{
+		if (moveDone.type==1 && moveDone.success==1)
+		{
+			cout<<playerName<<" successfully played a ";
+			print_card(moveDone.card);
+			cout<<".\n";
+		}
+		else if (moveDone.type==1 && moveDone.success==0)
+		{
+			cout<<playerName<<" unsuccessfully played a ";
+			print_card(moveDone.card);
+			cout<<" and lost a life.\n";
+		}
+		else
+		{
+			cout<<playerName<<" discarded a ";
+			print_card(moveDone.card);
+			cout<<".\n";
+		}
+	}
+	else
+	{
+		cout<<playerName<<" hinted "<<player2Name;
+		if (moveDone.type==3)
+		{
+			cout<<" the colour ";
+		}
+		else
+		{
+			cout<<" the number ";
+		}
+		print_card(moveDone.card);
+		cout<<".\n";
+	}
+}
+void Player::played_move(const MoveDone &moveDone)
+{
+	print_move(moveDone,0);
+	getch();
+}
 Move Player::do_move(const Information &info)
 {
 	system("cls");
 	getch();
+
+	print_move(info.moveBefore2,0);
+	print_move(info.moveBefore,1);
+	print_move(info.moveLast,2);
+	if (info.moveLast.type!=-1) cout<<'\n';
+
 
 	cout<<"Piles:";
 	for (int i=0;i<5;++i)
@@ -53,7 +98,7 @@ Move Player::do_move(const Information &info)
 	cout<<'\n';
 
 	auto &next=info.next;
-	cout<<"(1) Next player's cards:";
+	cout<<"Player 1's cards:";
 	for (int i=0;i<CARDS_IN_HAND;++i)
 	{
 		cout<<' ';
@@ -68,7 +113,7 @@ Move Player::do_move(const Information &info)
 	cout<<'\n';
 
 	auto &prev=info.prev;
-	cout<<"(2) Following player's cards:";
+	cout<<"Player 2's cards:";
 	for (int i=0;i<CARDS_IN_HAND;++i)
 	{
 		cout<<' ';

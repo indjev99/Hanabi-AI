@@ -4,8 +4,8 @@
 struct Move
 {
 	int type;
-	int card;
 	int player;
+	int card;
 };
 
 #endif // MOVE_H_INCLUDED

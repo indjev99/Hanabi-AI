@@ -8,9 +8,9 @@ struct Player
 {
 	void init();
 	Move do_move(const Information &info);
-	void played_card_successful(const Card &playedCard);
-	void played_card_unsuccessful(const Card &playedCard);
-	void discarded_card(const Card &playedCard);
+	void played_move(const MoveDone &moveDone);
 };
+
+void print_move(const MoveDone &moveDone, int player);
 
 #endif // PLAYER_H_INCLUDED

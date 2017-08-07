@@ -11,6 +11,6 @@ double score;
 void run()
 {
 	score=play_game(human1,human2,human3);
-	//system("cls");
+	system("cls");
 	cout<<score<<endl;
 }
