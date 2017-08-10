@@ -6,11 +6,9 @@
 
 struct PlayerStrategy:Player
 {
-	int currDraw;
-	int drawn[CARDS_IN_HAND];
-	virtual void init();
-	virtual Move do_move(const Information &info);
-	virtual void played_move(const MoveDone &moveDone);
+	void init();
+	Move do_move(const Information &info);
+	void played_move(const MoveDone &moveDone);
 };
 
 #endif // PLAYER_STRATEGY_H_INCLUDED

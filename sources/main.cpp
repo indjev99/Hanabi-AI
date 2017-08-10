@@ -4,7 +4,7 @@
 
 int main()
 {
-	srand(12);
+	srand(768768);
 	run();
 	return 0;
 }

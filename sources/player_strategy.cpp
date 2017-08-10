@@ -8,23 +8,9 @@
 using namespace std;
 
 
-void PlayerStrategy::init()
-{
-	currDraw=1;
-	for (int i=0;i<CARDS_IN_HAND;++i)
-	{
-		drawn[i]=0;
-	}
-}
+void PlayerStrategy::init() {}
 
-void PlayerStrategy::played_move(const MoveDone &moveDone)
-{
-	if (moveDone.type==1 || moveDone.type==2)
-	{
-		drawn[moveDone.cardNumber]=currDraw++;
-	}
-
-}
+void PlayerStrategy::played_move(const MoveDone &moveDone) {}
 
 Move PlayerStrategy::do_move(const Information &info)
 {
@@ -249,7 +235,6 @@ Move PlayerStrategy::do_move(const Information &info)
 	double minPartCritical=2;
 	double maxPartUseless=-1;
 	double minPartPlayable=2;
-	int minDrawn=currDraw;
 
 	if (currMove.type==-1)
 	{
@@ -265,29 +250,20 @@ Move PlayerStrategy::do_move(const Information &info)
 
 		for (int i=0;i<CARDS_IN_HAND;++i)
 		{
-			if (partCritical[i]<=minPartCritical+EPS && drawn[i]<minDrawn)
+			if (partCritical[i]<=minPartCritical+EPS  && partPlayable[i]<minPartPlayable)
 			{
-				minDrawn=drawn[i];
+				minPartPlayable=partPlayable[i];
 			}
 		}
 
 		for (int i=0;i<CARDS_IN_HAND;++i)
-		{
-			if (partCritical[i]<=minPartCritical+EPS && drawn[i]<=minDrawn && partPlayable[i]<minPartPlayable)
-			{
-				minPartPlayable=partPlayable[i];
-				currMove.card=i+1;
-			}
-		}
-
-		/*for (int i=0;i<CARDS_IN_HAND;++i)
 		{
 			if (partCritical[i]<=minPartCritical+EPS && partPlayable[i]<=minPartPlayable+EPS && partUseless[i]>maxPartUseless)
 			{
 				maxPartUseless=partUseless[i];
 				currMove.card=i+1;
 			}
-		}*/
+		}
 	}
 
     return currMove;

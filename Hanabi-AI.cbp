@@ -43,18 +43,24 @@
 		<Unit filename="headers/player.h" />
 		<Unit filename="headers/player_data.h" />
 		<Unit filename="headers/player_human.h" />
+		<Unit filename="headers/player_neural_network.h" />
 		<Unit filename="headers/player_random.h" />
+		<Unit filename="headers/player_random_no_play.h" />
 		<Unit filename="headers/player_strategy.h" />
 		<Unit filename="headers/print_card.h" />
+		<Unit filename="headers/randomisation.h" />
 		<Unit filename="headers/run.h" />
 		<Unit filename="sources/card_knowledge.cpp" />
 		<Unit filename="sources/main.cpp" />
 		<Unit filename="sources/play_game.cpp" />
+		<Unit filename="sources/play_neural_network.cpp" />
 		<Unit filename="sources/player.cpp" />
 		<Unit filename="sources/player_human.cpp" />
 		<Unit filename="sources/player_random.cpp" />
+		<Unit filename="sources/player_random_no_play.cpp" />
 		<Unit filename="sources/player_strategy.cpp" />
 		<Unit filename="sources/print_card.cpp" />
+		<Unit filename="sources/randomisation.cpp" />
 		<Unit filename="sources/run.cpp" />
 		<Extensions>
 			<code_completion />

@@ -6,6 +6,7 @@
 
 struct Player
 {
+	double score;
 	bool print;
 	virtual void init() =0;
 	virtual Move do_move(const Information &info) =0;
