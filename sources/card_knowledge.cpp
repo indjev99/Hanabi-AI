@@ -1,6 +1,6 @@
 #include "../headers/card_knowledge.h"
 
-const Card& card_with_knowledge(const Card& card, const CardKnowledge& cardKnowledge)
+const Card card_with_knowledge(const Card& card, const CardKnowledge& cardKnowledge)
 {
 	Card new_card=card;
 	if (cardKnowledge.know_col) new_card.col=card.col;
